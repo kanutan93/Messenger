@@ -1,5 +1,6 @@
 package ru.just.messenger.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -21,7 +22,7 @@ public class User {
   @JsonProperty(value = "password", access = JsonProperty.Access.WRITE_ONLY)
   private String password;
 
-  @JsonProperty(value = "avatarPath", access = JsonProperty.Access.WRITE_ONLY)
+  @JsonIgnore
   private String avatarPath;
 
   public long getId() {
