@@ -1,6 +1,7 @@
 package ru.just.messenger.config.security;
 
 public class SecurityConst {
+
   public static final String SECRET = "secret123";
   public static final long EXPIRATION_TIME = 10 * 86400000; // 10 days
   public static final String TOKEN_PREFIX = "Bearer ";
