@@ -3,6 +3,7 @@ package ru.just.messenger.controller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -18,11 +19,14 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.just.messenger.model.User;
 import ru.just.messenger.service.UserService;
 
+/**
+ * User controller.
+ */
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
-  private UserService userService;
+  private final UserService userService;
 
   @Autowired
   public UserController(UserService userService) {
@@ -37,6 +41,11 @@ public class UserController {
   @PutMapping("/current/avatar")
   public void updateAvatar(@RequestParam("avatar") MultipartFile avatar) throws IOException {
     userService.updateAvatar(avatar);
+  }
+
+  @GetMapping
+  public Collection<User> getUsers() {
+    return userService.getUsers();
   }
 
   @GetMapping("/{username}")

@@ -4,6 +4,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -14,17 +15,27 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.just.messenger.model.User;
 import ru.just.messenger.repository.UserRepository;
 
+/**
+ * User service.
+ */
 @Service
 public class UserService {
 
   @Value("${avatars.path}")
   private String avatarsPath;
 
-  private UserRepository userRepository;
+  private final UserRepository userRepository;
 
   @Autowired
   public UserService(UserRepository userRepository) {
     this.userRepository = userRepository;
+  }
+
+  /**
+   * Get users.
+   */
+  public Collection<User> getUsers() {
+    return userRepository.findAllWithout(getCurrentUser().getUsername());
   }
 
   public User getUser(String username) {
