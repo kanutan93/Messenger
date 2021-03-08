@@ -1,5 +1,6 @@
 package ru.just.messenger.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -19,7 +20,7 @@ public class Message {
   private long id;
 
   @NonNull
-  private String who;
+  private Long who;
 
   private String message;
 
@@ -28,15 +29,15 @@ public class Message {
 
   @ManyToOne
   @JoinColumn(name = "chat_id", nullable = false)
+  @JsonIgnore
   private Chat chat;
 
-
   @NonNull
-  public String getWho() {
+  public Long getWho() {
     return who;
   }
 
-  public void setWho(@NonNull String who) {
+  public void setWho(@NonNull Long who) {
     this.who = who;
   }
 
