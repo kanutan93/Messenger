@@ -12,6 +12,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
   User findByUsername(String username);
 
-  @Query("SELECT u FROM users u WHERE u.username <> ?1")
+  @Query("SELECT u FROM users u WHERE u.username <> :username")
   Collection<User> findAllWithout(String username);
 }
