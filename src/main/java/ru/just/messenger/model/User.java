@@ -2,12 +2,17 @@ package ru.just.messenger.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import org.springframework.lang.NonNull;
 
+/**
+ * User entity.
+ */
 @Entity(name = "users")
 public class User {
 
@@ -24,6 +29,10 @@ public class User {
 
   @JsonIgnore
   private String avatarPath;
+
+  @ManyToMany
+  @JsonIgnore
+  private List<Chat> chats;
 
   public long getId() {
     return id;
@@ -51,5 +60,13 @@ public class User {
 
   public void setAvatarPath(String avatarPath) {
     this.avatarPath = avatarPath;
+  }
+
+  public List<Chat> getChats() {
+    return chats;
+  }
+
+  public void setChats(List<Chat> chats) {
+    this.chats = chats;
   }
 }
