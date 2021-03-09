@@ -1,7 +1,10 @@
 package ru.just.messenger.service;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.just.messenger.model.Chat;
@@ -15,6 +18,8 @@ import ru.just.messenger.repository.MessageRepository;
  */
 @Service
 public class ChatService {
+
+  public static final Map<String, Long> USERS_ONLINE = new HashMap<>();
 
   private final ChatRepository chatRepository;
   private final UserService userService;
@@ -36,14 +41,25 @@ public class ChatService {
    */
   public List<Chat> getChats() {
     User currentUser = userService.getCurrentUser();
-    return chatRepository.getChatsByParticipant(currentUser);
+    return chatRepository.getChatsByParticipant(currentUser)
+        .stream().map(chat -> {
+          chat.setParticipants(
+              chat.getParticipants().stream().map(userService::setUserStatus)
+                  .collect(Collectors.toList())
+          );
+          return chat;
+        }).collect(Collectors.toList());
   }
 
   /**
    * Create chat.
    */
   public Chat createChat(Chat chat) {
-    return chatRepository.save(chat);
+    chat = chatRepository.save(chat);
+    chat.setParticipants(
+        chat.getParticipants().stream().map(userService::setUserStatus).collect(Collectors.toList())
+    );
+    return chat;
   }
 
   /**
