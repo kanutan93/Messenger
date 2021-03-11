@@ -4,14 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.socket.messaging.AbstractSubProtocolEvent;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import ru.just.messenger.model.User;
 import ru.just.messenger.service.ChatService;
 import ru.just.messenger.service.UserService;
+import ru.just.messenger.utils.WebSocketUtils;
 
+/**
+ * Ws events listener.
+ */
 @Configuration
 public class WebSocketEventListener {
 
@@ -41,8 +44,6 @@ public class WebSocketEventListener {
 
   private String getUsername(AbstractSubProtocolEvent event) {
     SimpMessageHeaderAccessor headers = SimpMessageHeaderAccessor.wrap(event.getMessage());
-    UsernamePasswordAuthenticationToken token =
-        (UsernamePasswordAuthenticationToken) headers.getMessageHeaders().get("simpUser");
-    return (String) token.getPrincipal();
+    return WebSocketUtils.getUsernameFromSimpMessageHeaderAccessor(headers);
   }
 }

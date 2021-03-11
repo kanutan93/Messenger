@@ -16,6 +16,9 @@ import org.springframework.web.socket.server.HandshakeInterceptor;
 import org.springframework.web.util.WebUtils;
 import ru.just.messenger.config.security.SecurityConst;
 
+/**
+ * Websocket's handshake interceptor.
+ */
 @Configuration
 public class WebSocketInterceptor implements HandshakeInterceptor {
 
@@ -33,7 +36,8 @@ public class WebSocketInterceptor implements HandshakeInterceptor {
     Cookie cookie = WebUtils.getCookie(request, SecurityConst.AUTH_TOKEN);
     if (cookie != null) {
       String user =
-          JWT.require(Algorithm.HMAC256(SecurityConst.SECRET)).build().verify(cookie.getValue()).getSubject();
+          JWT.require(Algorithm.HMAC256(SecurityConst.SECRET)).build().verify(cookie.getValue())
+              .getSubject();
       return user != null;
     }
     return false;

@@ -40,6 +40,9 @@ public class UserService {
         .stream().map(this::setUserStatus).collect(Collectors.toList());
   }
 
+  /**
+   * Get user.
+   */
   public User getUser(String username) {
     User user = userRepository.findByUsername(username);
     user = setUserStatus(user);

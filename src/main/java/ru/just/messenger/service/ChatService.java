@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Service;
 import ru.just.messenger.model.Chat;
 import ru.just.messenger.model.Message;
 import ru.just.messenger.model.User;
 import ru.just.messenger.repository.ChatRepository;
 import ru.just.messenger.repository.MessageRepository;
+import ru.just.messenger.utils.WebSocketUtils;
 
 /**
  * Chat service.
@@ -65,9 +67,11 @@ public class ChatService {
   /**
    * Create message.
    */
-  public Message createMessage(Long chatId, Message message) {
+  public Message createMessage(Long chatId, Message message,
+      SimpMessageHeaderAccessor headerAccessor) {
     Chat chat = chatRepository.getOne(chatId);
-    User user = userService.getCurrentUser();
+    User user = userService
+        .getUser(WebSocketUtils.getUsernameFromSimpMessageHeaderAccessor(headerAccessor));
     message.setWho(user.getId());
     message.setChat(chat);
     message.setTime(new Date().toGMTString());
