@@ -17,6 +17,9 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.just.messenger.model.User;
 import ru.just.messenger.service.AuthService;
 
+/**
+ * Auth controller.
+ */
 @RestController
 public class AuthController {
 
