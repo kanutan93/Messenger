@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -36,8 +35,7 @@ public class UserService {
    * Get users.
    */
   public List<User> getUsers() {
-    return userRepository.findAllWithout(getCurrentUser().getUsername())
-        .stream().map(this::setUserStatus).collect(Collectors.toList());
+    return userRepository.findAllWithout(getCurrentUser().getUsername());
   }
 
   /**
@@ -45,7 +43,6 @@ public class UserService {
    */
   public User getUser(String username) {
     User user = userRepository.findByUsername(username);
-    user = setUserStatus(user);
     return user;
   }
 
@@ -57,7 +54,6 @@ public class UserService {
     if (!(authentication instanceof AnonymousAuthenticationToken)) {
       String currentUserName = authentication.getName();
       User user = userRepository.findByUsername(currentUserName);
-      user = setUserStatus(user);
       return user;
     }
     return null;
@@ -77,18 +73,5 @@ public class UserService {
     User currentUser = getCurrentUser();
     currentUser.setAvatarPath(file.getAbsolutePath());
     userRepository.save(currentUser);
-  }
-
-  /**
-   * Set user status.
-   */
-  public User setUserStatus(User user) {
-    boolean isUserOnline = ChatService.USERS_ONLINE.containsValue(user.getId());
-    if (isUserOnline) {
-      user.setStatus("online");
-    } else {
-      user.setStatus("offline");
-    }
-    return user;
   }
 }

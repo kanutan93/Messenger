@@ -18,11 +18,15 @@ import ru.just.messenger.utils.WebSocketUtils;
 @Configuration
 public class WebSocketEventListener {
 
+  private static final String TOPIC_USERS = "/topic/users";
+
   private final UserService userService;
+  private final ChatService chatService;
 
   @Autowired
-  public WebSocketEventListener(UserService userService) {
+  public WebSocketEventListener(UserService userService, ChatService chatService) {
     this.userService = userService;
+    this.chatService = chatService;
   }
 
   @EventListener
@@ -30,11 +34,13 @@ public class WebSocketEventListener {
     String username = getUsername(event);
     User user = userService.getUser(username);
     ChatService.USERS_ONLINE.put(getSessionId(event), user.getId());
+    chatService.sendMessage(TOPIC_USERS, ChatService.USERS_ONLINE.values());
   }
 
   @EventListener
   private void handleSessionDisconnect(SessionDisconnectEvent event) {
     ChatService.USERS_ONLINE.remove(getSessionId(event));
+    chatService.sendMessage(TOPIC_USERS, ChatService.USERS_ONLINE.values());
   }
 
   private String getSessionId(AbstractSubProtocolEvent event) {

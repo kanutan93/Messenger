@@ -4,9 +4,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import ru.just.messenger.model.Chat;
 import ru.just.messenger.model.Message;
@@ -26,16 +26,18 @@ public class ChatService {
   private final ChatRepository chatRepository;
   private final UserService userService;
   private final MessageRepository messageRepository;
+  private final SimpMessagingTemplate template;
 
   /**
    * Constructor.
    */
   @Autowired
   public ChatService(ChatRepository chatRepository, UserService userService,
-      MessageRepository messageRepository) {
+      MessageRepository messageRepository, SimpMessagingTemplate template) {
     this.chatRepository = chatRepository;
     this.userService = userService;
     this.messageRepository = messageRepository;
+    this.template = template;
   }
 
   /**
@@ -43,14 +45,14 @@ public class ChatService {
    */
   public List<Chat> getChats() {
     User currentUser = userService.getCurrentUser();
-    return chatRepository.getChatsByParticipant(currentUser)
-        .stream().map(chat -> {
-          chat.setParticipants(
-              chat.getParticipants().stream().map(userService::setUserStatus)
-                  .collect(Collectors.toList())
-          );
-          return chat;
-        }).collect(Collectors.toList());
+    return getChats(currentUser);
+  }
+
+  /**
+   * Get user's chats.
+   */
+  public List<Chat> getChats(User user) {
+    return chatRepository.getChatsByParticipant(user);
   }
 
   /**
@@ -58,9 +60,6 @@ public class ChatService {
    */
   public Chat createChat(Chat chat) {
     chat = chatRepository.save(chat);
-    chat.setParticipants(
-        chat.getParticipants().stream().map(userService::setUserStatus).collect(Collectors.toList())
-    );
     return chat;
   }
 
@@ -76,5 +75,12 @@ public class ChatService {
     message.setChat(chat);
     message.setTime(new Date().toGMTString());
     return messageRepository.save(message);
+  }
+
+  /**
+   * Send websocket message.
+   */
+  public void sendMessage(String destination, Object payload) {
+    this.template.convertAndSend(destination, payload);
   }
 }
