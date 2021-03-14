@@ -1,12 +1,15 @@
 package ru.just.messenger.controller;
 
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import ru.just.messenger.model.Message;
+import ru.just.messenger.model.User;
 import ru.just.messenger.service.ChatService;
 
 /**
@@ -15,6 +18,9 @@ import ru.just.messenger.service.ChatService;
 @Controller
 public class ChatWebSocketController {
 
+  @PersistenceContext
+  EntityManager entityManager;
+
   private final ChatService chatService;
 
   @Autowired
@@ -22,10 +28,17 @@ public class ChatWebSocketController {
     this.chatService = chatService;
   }
 
+  /**
+   * Create message and send to /topic/chats/chat/:id and /topic/chats/:userId topics.
+   */
   @MessageMapping("/chats/{id}")
-  @SendTo("/topic/chats/{id}")
-  public Message createMessage(@DestinationVariable Long id, Message message,
+  public void createMessage(@DestinationVariable Long id, Message message,
       SimpMessageHeaderAccessor headerAccessor) {
-    return chatService.createMessage(id, message, headerAccessor);
+    message = chatService.createMessage(id, message, headerAccessor);
+    this.chatService.sendMessage("/topic/chats/chat/" + id, message);
+    List<User> participants = message.getChat().getParticipants();
+    for (User user : participants) {
+      this.chatService.sendMessage("/topic/chats/" + user.getId(), message);
+    }
   }
 }

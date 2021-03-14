@@ -21,7 +21,7 @@ import ru.just.messenger.utils.WebSocketUtils;
 @Service
 public class ChatService {
 
-  public static final Map<String, Long> USERS_ONLINE = new HashMap<>();
+  public static final Map<String, User> USERS_ONLINE = new HashMap<>();
 
   private final ChatRepository chatRepository;
   private final UserService userService;
@@ -68,7 +68,9 @@ public class ChatService {
    */
   public Message createMessage(Long chatId, Message message,
       SimpMessageHeaderAccessor headerAccessor) {
-    Chat chat = chatRepository.getOne(chatId);
+    Chat chat = chatRepository.findChatById(chatId);
+    List<User> participants = chatRepository.findParticipantsByChatId(chatId);
+    chat.setParticipants(participants);
     User user = userService
         .getUser(WebSocketUtils.getUsernameFromSimpMessageHeaderAccessor(headerAccessor));
     message.setWho(user.getId());

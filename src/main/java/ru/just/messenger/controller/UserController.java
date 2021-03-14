@@ -59,13 +59,17 @@ public class UserController {
   @GetMapping("/{username}/avatar")
   public ResponseEntity<InputStreamResource> getAvatar(@PathVariable String username)
       throws IOException {
-    File file = new File(userService.getUser(username).getAvatarPath());
+    try {
+      File file = new File(userService.getUser(username).getAvatarPath());
 
-    return ResponseEntity.ok()
-        .header(HttpHeaders.CONTENT_DISPOSITION,
-            "attachment; filename=\"" + file.getName() + "\"")
-        .contentLength(file.length())
-        .contentType(MediaType.APPLICATION_OCTET_STREAM)
-        .body(new InputStreamResource(new FileInputStream(file)));
+      return ResponseEntity.ok()
+          .header(HttpHeaders.CONTENT_DISPOSITION,
+              "attachment; filename=\"" + file.getName() + "\"")
+          .contentLength(file.length())
+          .contentType(MediaType.APPLICATION_OCTET_STREAM)
+          .body(new InputStreamResource(new FileInputStream(file)));
+    } catch (Exception e) {
+      return ResponseEntity.notFound().build();
+    }
   }
 }

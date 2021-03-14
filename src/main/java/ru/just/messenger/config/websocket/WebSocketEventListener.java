@@ -33,7 +33,7 @@ public class WebSocketEventListener {
   private void handleSessionConnected(SessionConnectEvent event) {
     String username = getUsername(event);
     User user = userService.getUser(username);
-    ChatService.USERS_ONLINE.put(getSessionId(event), user.getId());
+    ChatService.USERS_ONLINE.put(getSessionId(event), user);
     chatService.sendMessage(TOPIC_USERS, ChatService.USERS_ONLINE.values());
   }
 
