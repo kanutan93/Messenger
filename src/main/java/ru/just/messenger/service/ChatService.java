@@ -1,5 +1,6 @@
 package ru.just.messenger.service;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -84,5 +85,12 @@ public class ChatService {
    */
   public void sendMessage(String destination, Object payload) {
     this.template.convertAndSend(destination, payload);
+  }
+
+  /**
+   * Get user online.
+   */
+  public Collection<User> getUsersOnline() {
+    return USERS_ONLINE.values();
   }
 }
