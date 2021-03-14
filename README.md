@@ -1,4 +1,4 @@
-# Messenger-back
+# Messenger
 This project is backend for the [Messenger](https://kanutan93-messenger-front.herokuapp.com/)
 
 ### Building
