@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.servlet.FilterChain;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,7 +17,7 @@ import ru.just.messenger.model.User;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-  private AuthenticationManager authenticationManager;
+  private final AuthenticationManager authenticationManager;
 
   public JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
     this.authenticationManager = authenticationManager;
@@ -50,12 +49,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                     .getUsername())
             .sign(Algorithm.HMAC256(SecurityConst.SECRET));
 
-    Cookie cookie = new Cookie(SecurityConst.AUTH_TOKEN, jwtToken);
-    cookie.setMaxAge(7 * 24 * 60 * 60);
-    // cookie.setSecure(true);
-    cookie.setHttpOnly(true);
-    cookie.setPath("/");
-
-    response.addCookie(cookie);
+    response.setHeader("Set-Cookie", String
+        .format("%s=%s; Max-Age=%s; Path=/; HttpOnly; secure; SameSite=none",
+            SecurityConst.AUTH_TOKEN, jwtToken, 7 * 24 * 60 * 60));
   }
 }
