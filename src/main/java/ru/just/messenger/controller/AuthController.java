@@ -4,7 +4,6 @@ import static ru.just.messenger.config.security.SecurityConst.IS_LOGGED_IN_URL;
 import static ru.just.messenger.config.security.SecurityConst.SIGN_OUT_URL;
 import static ru.just.messenger.config.security.SecurityConst.SIGN_UP_URL;
 
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
