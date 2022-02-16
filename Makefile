@@ -1,4 +1,4 @@
-####Default
+###Default
 
 ORIGIN=http://localhost:4200
 AVATARS_PATH=/home/dmitrii/avatars
